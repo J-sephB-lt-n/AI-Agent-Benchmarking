@@ -15,7 +15,7 @@ class MainAction(Enum):
 
 main_action_user_choice: str = questionary.select(
     "What would you like to do?",
-    choices=[x.value for x in MAIN_ACTION],
+    choices=[x.value for x in MainAction],
 ).ask()
 main_action: MainAction = next(
     x for x in MainAction if x.value == main_action_user_choice
