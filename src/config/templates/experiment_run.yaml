@@ -1,0 +1,42 @@
+experiment_name: "{{ experiment_name }}"
+
+frameworks:
+  # Set to true to include the framework in the evaluation, false to exclude #
+  AtomicAgents: true
+  AutoGen: true
+  JoeHandRolled: true
+  LangChain: true
+  LangGraph: true
+  OpenAIAgentsSDK: true
+  PydanticAI: true
+  SmolAgents: true
+  StrandsAgents: true
+
+benchmarks:
+  # A list of benchmarks to include in the evaluation #
+  - name: "AgentBench"
+    enabled: true # set to false to disable
+    sample: 1.0 # Run 100% of the tasks
+
+models:
+  - base_url: https://api.openai.com/v1
+    models:
+    - experiment_model_name: "GPT-4o temp 0.1" # A user-defined alias for this model configuration
+      api_model_name: "gpt-4o" # The actual model string the API expects
+      params: # Arbitrary key-value pairs passed directly to the API client
+        temperature: 0.1
+        max_tokens: 4096
+    - experiment_model_name: "GPT-4o temp 1.0"
+      api_model_name: "gpt-4o"
+      params:
+        temperature: 1.0
+        max_tokens: 4096
+
+  - base_url: http://localhost:11434/v1
+    models:
+    - experiment_model_name: "Gemma3 12B"
+      api_model_name: "gemma3:12b"
+      params:
+        temperature: 0.0
+    - experiment_model_name: "Gemma3 1B"
+      api_model_name: "gemma3:1b"
