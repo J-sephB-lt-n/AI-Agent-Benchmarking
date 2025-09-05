@@ -18,6 +18,11 @@ benchmarks:
     enabled: true # set to false to disable
     sample: 1.0 # Run 100% of the tasks
 
+model_defaults:
+  # models will use these params if an explicit value is not provided
+  temperature: 0.1
+  max_tokens: 4096
+
 models:
   - base_url: https://api.openai.com/v1
     models:
