@@ -26,6 +26,10 @@ async def main():
         )
 
         # ... perform independent actions on each page ...
+        for page_num, page in enumerate((page_one, page_two), start=1):
+            html: str = await page.page_source
+            print(f"Starting html of page {page_num}:")
+            print(html)
         print("Pages loaded. Waiting for 10 seconds...")
         await asyncio.sleep(10)
 
