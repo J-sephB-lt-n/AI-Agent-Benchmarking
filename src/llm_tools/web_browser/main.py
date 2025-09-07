@@ -7,6 +7,7 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, AsyncGenerator, Optional
 
+from html2text import HTML2Text
 from pydoll.browser.chromium import Chrome
 from pydoll.browser.options import ChromiumOptions
 
@@ -17,6 +18,9 @@ from pydoll.browser.options import ChromiumOptions
 # A dataclass to hold the state for a single isolated session.
 # The context variable `current_session` makes this state implicitly available
 # to any function called within an `isolated_session` block.
+
+
+html_to_text = HTML2Text()
 
 
 @dataclass
@@ -73,11 +77,20 @@ class BrowserManager:
             if not self._browser:
                 return
             print(">>> BrowserManager: Shutting down global Chrome instance...")
-            # The pydoll Chrome class doesn't have a close() method
-            # Instead, we should rely on proper cleanup when the browser object is destroyed
-            self._browser = None
-            self._pages.clear()
-            print(">>> BrowserManager: Chrome instance shut down.")
+
+            try:
+                # Clear our page registry
+                self._pages.clear()
+
+                # Use pydoll's stop method to properly close the browser
+                await self._browser.stop()
+
+            except Exception as e:
+                print(f">>> Error during browser shutdown: {e}")
+            finally:
+                # Clear our internal state
+                self._browser = None
+                print(">>> BrowserManager: Chrome instance shut down.")
 
     async def create_browser_context(self) -> str:
         """Wraps pydoll's create_browser_context."""
@@ -173,10 +186,11 @@ WEB_BROWSER = WebBrowser(manager=BROWSER_MANAGER)
 def html_to_markdown(html: str) -> str:
     """A dummy function to represent HTML to Markdown conversion."""
     # In a real implementation, you'd use a library like `markdownify`.
-    content = html.strip()
-    if len(content) > 300:
-        return content[:150] + "\n...\n" + content[-150:]
-    return content
+    # content = html.strip()
+    # if len(content) > 300:
+    #     return content[:150] + "\n...\n" + content[-150:]
+    # return content
+    return html_to_text.handle(html)
 
 
 async def go_to_url(page_url: str) -> str:
