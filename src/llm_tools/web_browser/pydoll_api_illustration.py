@@ -18,6 +18,8 @@ async def main():
         page_one = await browser.new_tab(browser_context_id=context_one_id)
         page_two = await browser.new_tab(browser_context_id=context_two_id)
 
+        print("********************", type(page_one))
+
         # Now, page_one and page_two are completely isolated
         # and will NOT share cookies or session storage.
         await asyncio.gather(
@@ -29,7 +31,7 @@ async def main():
         for page_num, page in enumerate((page_one, page_two), start=1):
             html: str = await page.page_source
             print(f"Starting html of page {page_num}:")
-            print(html)
+            # print(html)
         print("Pages loaded. Waiting for 10 seconds...")
         await asyncio.sleep(10)
 

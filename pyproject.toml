@@ -7,6 +7,14 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "html2text>=2025.4.15",
+    "openai>=1.106.1",
+    "pydantic>=2.11.7",
     "pydoll-python>=2.8.0",
     "questionary>=2.1.1",
+]
+
+[dependency-groups]
+dev = [
+    "ipython>=9.5.0",
+    "python-dotenv>=1.1.1",
 ]

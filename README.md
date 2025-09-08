@@ -26,3 +26,11 @@ Desired agent characteristics:
 - ease of use (difficulty to integrate. Is the agent code writable/readable)
 - flexibility (of the implementation API)
 - tracing/logging
+
+## Available Tools
+
+### Web Browser
+
+```python
+uv run python -m src.llm_tools.web_browser.examples.manual_exploration
+```
