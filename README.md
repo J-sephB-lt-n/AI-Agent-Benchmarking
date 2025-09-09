@@ -1,9 +1,11 @@
-# AI-Agent-Benchmarking
+# AI Agent Benchmarking
 
-To interactively create, run and see results of experiments, run:
+## Available Tools
 
-```bash
-uv run python -m src.cli_menu
+### Web Browser
+
+```python
+uv run python -m src.llm_tools.web_browser.examples.openai
 ```
 
 ## Notes
@@ -26,11 +28,3 @@ Desired agent characteristics:
 - ease of use (difficulty to integrate. Is the agent code writable/readable)
 - flexibility (of the implementation API)
 - tracing/logging
-
-## Available Tools
-
-### Web Browser
-
-```python
-uv run python -m src.llm_tools.web_browser.examples.manual_exploration
-```

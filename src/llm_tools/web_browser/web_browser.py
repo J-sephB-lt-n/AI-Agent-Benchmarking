@@ -2,13 +2,12 @@
 
 import asyncio
 import contextlib
-import uuid
 from contextvars import ContextVar
-from dataclasses import dataclass, field
-from typing import Any, AsyncGenerator, Optional
+from dataclasses import dataclass
 
 import pydoll.browser.tab
 from html2text import HTML2Text
+from markdownify import markdownify as md
 from pydoll.browser.chromium import Chrome
 from pydoll.browser.options import ChromiumOptions
 
@@ -124,7 +123,11 @@ async def go_to_url(url: str) -> str:
     await asyncio.sleep(5)  # wait for page to load a bit
     current_session.current_url = url
     html: str = await current_session.browser_tab.page_source
-    page_text: str = current_session.html_to_text(html)
+    page_text: str = md(html)
+    # page_text: str = current_session.html_to_text(html)
+    print(f"xx {url} xx")
+    print(page_text)
+    print("x" * 60)
     current_session.current_page_html = html
     current_session.current_page_text = page_text
     return page_text

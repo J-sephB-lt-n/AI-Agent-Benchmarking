@@ -7,6 +7,7 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "html2text>=2025.4.15",
+    "markdownify>=1.2.0",
     "openai>=1.106.1",
     "pydantic>=2.11.7",
     "pydoll-python>=2.8.0",

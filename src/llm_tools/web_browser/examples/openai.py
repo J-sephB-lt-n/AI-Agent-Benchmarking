@@ -17,9 +17,10 @@ from src.llm_tools import func_defn_as_json_schema
 AGENT_TASKS: Final[list[str]] = [
     (
         "Go to https://en.wikipedia.org/wiki/List_of_serial_killers_by_number_of_victims, "
-        "navigate to one of the URLs you see on that page and succinctly summarise the content of that page "
-        "in a short bulleted list."
+        "navigate to one of the URLs you see on that page and succinctly summarise the content "
+        "of that page in a short bulleted list. Just choose a random one."
     ),
+    "Go to hacker news, navigate to the 4th highest post and summarise it's content.",
 ]
 AGENT_TOOLS: Final[dict[str, Callable]] = {
     "go_to_url": go_to_url,
@@ -27,8 +28,7 @@ AGENT_TOOLS: Final[dict[str, Callable]] = {
 MAX_N_AGENT_LOOPS: Final[int] = 5
 
 print(
-    "Attempting to load credentials from .env. SUCCESS=",
-    dotenv.load_dotenv(".env"),
+    f'Attempting to load credentials from .env file. success={dotenv.load_dotenv(".env")}'
 )
 
 llm_client = openai.AsyncOpenAI(
@@ -38,7 +38,7 @@ llm_client = openai.AsyncOpenAI(
 
 
 async def main():
-    """TODO."""
+    """Run the agent tasks."""
     browser_manager = BrowserManager()
     await browser_manager.start_browser(
         browser_args=["--ignore-certificate-errors"],
@@ -46,9 +46,21 @@ async def main():
     try:
         browser = WebBrowser(browser_manager)
         for agent_task in AGENT_TASKS:
+            agent_failed: bool = False
             print(f"Started task '{agent_task}'")
             async with browser.isolated_browser_session():
-                messages_history: list[dict] = [{"role": "user", "content": agent_task}]
+                messages_history: list[dict] = [
+                    {
+                        "role": "system",
+                        "content": """
+You are a helpful assistant with access to the internet.
+
+Functions available to you:
+- For all page navigation, use the `go_to_url` tool.
+                        """.strip(),
+                    },
+                    {"role": "user", "content": agent_task},
+                ]
                 for _ in range(MAX_N_AGENT_LOOPS):
                     llm_response = await llm_client.chat.completions.create(
                         model=os.environ["DEFAULT_MODEL"],
@@ -99,13 +111,17 @@ async def main():
                                 {
                                     "role": "tool",
                                     "tool_call_id": tool_call.id,
-                                    "content": f"Tool call failed with error: \n{json.dumps(error_info, indent=4)}",
+                                    "content": f"Tool call failed with error:\n{json.dumps(error_info, indent=4)}",
                                 }
                             )
                 else:
                     print(f"Exhausted {MAX_N_AGENT_LOOPS}.")
+                    agent_failed = True
 
-            print(f"Finished task '{agent_task}'")
+            print(
+                f"Finished task '{agent_task}'",
+                "(exhausted max n agent loops)" if agent_failed else "",
+            )
             print(json.dumps(messages_history, indent=4, default=str))
             print("-" * 60)
             print()
